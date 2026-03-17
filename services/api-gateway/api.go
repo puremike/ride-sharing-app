@@ -30,6 +30,7 @@ func route() http.Handler {
 
 	// g.POST("/trip/preview", middleware.EnableCors(), handleTripPreview)
 	g.POST("/trip/preview", cors.New(tripPreviewCorsConfig), handleTripPreview)
+	g.POST("/trip/start", cors.New(tripPreviewCorsConfig), handleTripStart)
 	g.GET("/ws/drivers", handleDriversWebSocket)
 	g.GET("/ws/riders", handleRidersWebSocket)
 

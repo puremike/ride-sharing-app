@@ -11,7 +11,53 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// func handleTripPreview(c *gin.Context)
+func handleTripStart(c *gin.Context) {
+	bodyBytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		log.Printf("failed to read request body: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var payload createTripRequest
+
+	if err := json.Unmarshal(bodyBytes, &payload); err != nil {
+		log.Printf("failed to unmarshal request body: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// basic validation
+	if payload.UserID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id is required"})
+		return
+	}
+
+	if payload.RideFareID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ride_fare_id is required"})
+		return
+	}
+
+	tripService, err := grpc_clients.NewTripServiceClient()
+	if err != nil {
+		log.Printf("failed to create trip-service client: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer tripService.Close()
+
+	tripStart, err := tripService.Client.CreateTrip(c.Request.Context(), payload.toProto())
+
+	if err != nil {
+		log.Printf("failed to preview trip: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"failed to preview trip": err.Error()})
+		return
+	}
+
+	response := contracts.APIResponse{Data: tripStart}
+
+	c.JSON(http.StatusOK, response)
+}
 
 func handleTripPreview(c *gin.Context) {
 	bodyBytes, err := io.ReadAll(c.Request.Body)

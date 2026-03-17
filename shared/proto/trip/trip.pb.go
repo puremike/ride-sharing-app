@@ -137,7 +137,7 @@ type PreviewTripResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	TripID        string                 `protobuf:"bytes,1,opt,name=tripID,proto3" json:"tripID,omitempty"`
 	Route         *Route                 `protobuf:"bytes,2,opt,name=route,proto3" json:"route,omitempty"`
-	Ridefares     []*RideFare            `protobuf:"bytes,3,rep,name=ridefares,proto3" json:"ridefares,omitempty"`
+	RideFares     []*RideFare            `protobuf:"bytes,3,rep,name=rideFares,proto3" json:"rideFares,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -186,9 +186,9 @@ func (x *PreviewTripResponse) GetRoute() *Route {
 	return nil
 }
 
-func (x *PreviewTripResponse) GetRidefares() []*RideFare {
+func (x *PreviewTripResponse) GetRideFares() []*RideFare {
 	if x != nil {
-		return x.Ridefares
+		return x.RideFares
 	}
 	return nil
 }
@@ -639,7 +639,7 @@ const file_trip_proto_rawDesc = "" +
 	"\x13PreviewTripResponse\x12\x16\n" +
 	"\x06tripID\x18\x01 \x01(\tR\x06tripID\x12!\n" +
 	"\x05route\x18\x02 \x01(\v2\v.trip.RouteR\x05route\x12,\n" +
-	"\tridefares\x18\x03 \x03(\v2\x0e.trip.RideFareR\tridefares\"k\n" +
+	"\trideFares\x18\x03 \x03(\v2\x0e.trip.RideFareR\trideFares\"k\n" +
 	"\x05Route\x12*\n" +
 	"\bgeometry\x18\x01 \x03(\v2\x0e.trip.GeometryR\bgeometry\x12\x1a\n" +
 	"\bdistance\x18\x02 \x01(\x01R\bdistance\x12\x1a\n" +
@@ -707,7 +707,7 @@ var file_trip_proto_depIdxs = []int32{
 	1,  // 0: trip.PreviewTripRequest.pickup:type_name -> trip.Coordinate
 	1,  // 1: trip.PreviewTripRequest.destination:type_name -> trip.Coordinate
 	3,  // 2: trip.PreviewTripResponse.route:type_name -> trip.Route
-	5,  // 3: trip.PreviewTripResponse.ridefares:type_name -> trip.RideFare
+	5,  // 3: trip.PreviewTripResponse.rideFares:type_name -> trip.RideFare
 	4,  // 4: trip.Route.geometry:type_name -> trip.Geometry
 	1,  // 5: trip.Geometry.coordinates:type_name -> trip.Coordinate
 	8,  // 6: trip.CreateTripResponse.trip:type_name -> trip.Trip

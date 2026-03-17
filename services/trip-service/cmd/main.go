@@ -8,17 +8,20 @@ import (
 	"os/signal"
 	"syscall"
 
+	"ride-sharing/services/trip-service/internal/infrastructure/events"
 	"ride-sharing/services/trip-service/internal/infrastructure/grpc"
 	"ride-sharing/services/trip-service/internal/infrastructure/repository"
 	"ride-sharing/services/trip-service/internal/service"
 	"ride-sharing/shared/env"
+	"ride-sharing/shared/messaging"
 
 	grpcserver "google.golang.org/grpc"
 )
 
 var (
 	// httpAddr = env.GetString("TRIP_HTTP_ADDR", ":8083")
-	grpcAddr = env.GetString("TRIP_GRPC_ADDR", ":9093")
+	grpcAddr    = env.GetString("TRIP_GRPC_ADDR", ":9093")
+	rabbitMqURI = env.GetString("RABBITMQ_URI", "amqp://guest:guest@rabbitmq:5672/")
 )
 
 func main() {
@@ -45,10 +48,20 @@ func main() {
 		return
 	}
 
+	// RabbitMQ Connection
+	rmqConn, err := messaging.NewRabbitMQ(rabbitMqURI)
+	if err != nil {
+		log.Fatal("Failed to connect to RabbitMQ:", err)
+	}
+	defer rmqConn.Close()
+	log.Print("Connected to RabbitMQ")
+
+	// Event Publisher
+	publisher := events.NewTripEventPublisher(rmqConn)
+
 	// Starting the GRPC Server
 	grpcServer := grpcserver.NewServer()
-	grpc.NewGRPCHandler(grpcServer, svc)
-
+	grpc.NewGRPCHandler(grpcServer, svc, publisher)
 	go func() {
 		// start the gRPC server
 		if err := grpcServer.Serve(listen); err != nil {

@@ -25,11 +25,18 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "200m"
+
+          env:
+            - name: RABBITMQ_URI
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: uri
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: driver-service
+  name: driver-serviced
 spec:
   type: ClusterIP
   ports:
