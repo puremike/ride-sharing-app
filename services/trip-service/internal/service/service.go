@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -30,6 +31,10 @@ func (s *service) CreateTrip(ctx context.Context, fare *domain.RideFareModel) (*
 
 	ctx, cancel := context.WithTimeout(ctx, QueryDefaultContext)
 	defer cancel()
+
+	if fare == nil {
+		return nil, errors.New("fare model cannot be nil")
+	}
 
 	t := &domain.TripModel{
 		ID:       primitive.NewObjectID(),
@@ -166,5 +171,5 @@ func (s *service) GetAndValidateFare(ctx context.Context, fareID string, userID 
 		return nil, fmt.Errorf("unauthorized: fare does not belong to user")
 	}
 
-	return nil, nil
+	return fare, nil
 }

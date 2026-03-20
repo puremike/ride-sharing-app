@@ -49,8 +49,8 @@ func handleTripStart(c *gin.Context) {
 	tripStart, err := tripService.Client.CreateTrip(c.Request.Context(), payload.toProto())
 
 	if err != nil {
-		log.Printf("failed to preview trip: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"failed to preview trip": err.Error()})
+		log.Printf("failed to start trip: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"failed to start trip": err.Error()})
 		return
 	}
 

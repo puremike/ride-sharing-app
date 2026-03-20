@@ -44,6 +44,15 @@ func main() {
 	defer rmqConn.Close()
 	log.Print("Connected to RabbitMQ")
 
+	consumer := NewTripConsumer(rmqConn)
+
+	go func() {
+		if err := consumer.Listen(); err != nil {
+			log.Fatalf("Failed to listen to messages: %v", err)
+			return
+		}
+	}()
+
 	gRPCServer := grpcserver.NewServer()
 	svc := NewService()
 	NewGRPCHandler(gRPCServer, svc)

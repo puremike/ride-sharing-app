@@ -37,7 +37,11 @@ func (h *gRPCHandler) CreateTrip(ctx context.Context, req *pb.CreateTripRequest)
 		return nil, status.Errorf(codes.Internal, "failed to get and validate fare: %v", err)
 	}
 
-	log.Print("Trip created: just checking ........")
+	// TESTING PURPOSES ONLY, PLEASE REMOVE THIS LOGIC LATER
+	// log.Print("Trip created: just checking ........")
+	// if err := h.publisher.PublishTripCreatedEvent(ctx); err != nil {
+	// 	return nil, status.Errorf(codes.Internal, "failed to publish the trip event: %v", err)
+	// }
 
 	trip, err := h.service.CreateTrip(ctx, rideFare)
 
