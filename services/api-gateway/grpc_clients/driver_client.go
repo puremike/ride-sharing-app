@@ -8,12 +8,12 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-type driverServiceClient struct {
+type DriverServiceClient struct {
 	Client pb.DriverServiceClient
 	conn   *grpc.ClientConn
 }
 
-func NewDriverServiceClient() (*driverServiceClient, error) {
+func NewDriverServiceClient() (*DriverServiceClient, error) {
 	driverServiceURL := os.Getenv("DRIVER_SERVICE_URL")
 	if driverServiceURL == "" {
 		driverServiceURL = "driver-service:9092"
@@ -26,13 +26,13 @@ func NewDriverServiceClient() (*driverServiceClient, error) {
 
 	client := pb.NewDriverServiceClient(conn)
 
-	return &driverServiceClient{
+	return &DriverServiceClient{
 		Client: client,
 		conn:   conn,
 	}, nil
 }
 
-func (c *driverServiceClient) Close() {
+func (c *DriverServiceClient) Close() {
 	if c.conn != nil {
 		if err := c.conn.Close(); err != nil {
 			return

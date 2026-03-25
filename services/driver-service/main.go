@@ -9,6 +9,7 @@ import (
 	"ride-sharing/shared/env"
 	"ride-sharing/shared/messaging"
 	"syscall"
+	"time"
 
 	grpcserver "google.golang.org/grpc"
 )
@@ -36,6 +37,12 @@ func main() {
 		return
 	}
 
+	instanceID := time.Now().UnixNano()
+	svc := NewService(instanceID)
+
+	// In your log
+	log.Printf("[%d] Consumer check: Found 0 matches out of 0...", instanceID)
+
 	// RabbitMQ Connection
 	rmqConn, err := messaging.NewRabbitMQ(rabbitMqURI)
 	if err != nil {
@@ -44,7 +51,7 @@ func main() {
 	defer rmqConn.Close()
 	log.Print("Connected to RabbitMQ")
 
-	consumer := NewTripConsumer(rmqConn)
+	consumer := NewTripConsumer(rmqConn, svc)
 
 	go func() {
 		if err := consumer.Listen(); err != nil {
@@ -54,7 +61,7 @@ func main() {
 	}()
 
 	gRPCServer := grpcserver.NewServer()
-	svc := NewService()
+
 	NewGRPCHandler(gRPCServer, svc)
 
 	go func() {

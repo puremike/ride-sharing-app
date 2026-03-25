@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"ride-sharing/services/api-gateway/grpc_clients"
@@ -64,7 +65,7 @@ func handleDriversWebSocket(c *gin.Context) {
 		return
 	}
 
-	ctx := c.Request.Context()
+	ctx := context.Background()
 
 	driverService, err := grpc_clients.NewDriverServiceClient()
 	if err != nil {

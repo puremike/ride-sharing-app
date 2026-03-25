@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"ride-sharing/shared/contracts"
@@ -166,7 +167,6 @@ func (r *RabbitMQ) ConsumeMessages(queueName string, handler MessageHandler) err
 
 	go func() {
 		for msg := range msgs {
-			// log.Printf("Received a message: %s", msg.Body)
 
 			if err := handler(ctx, msg); err != nil {
 				log.Printf("failed to handle messages: %v; message: %s", err, msg.Body)
@@ -194,18 +194,23 @@ func (r *RabbitMQ) ConsumeMessages(queueName string, handler MessageHandler) err
 	return nil
 }
 
-func (r *RabbitMQ) PublishMessage(ctx context.Context, routingKey string, body string) error {
+func (r *RabbitMQ) PublishMessage(ctx context.Context, routingKey string, body contracts.AmqpMessage) error {
 
-	log.Printf("Publishing message to exchange %s with routing key %s: %s", TripExchange, routingKey, body)
+	log.Printf("Publishing message to exchange %s with routing key %s", TripExchange, routingKey)
 
-	err := r.Channel.PublishWithContext(ctx,
+	payload, err := json.Marshal(body)
+	if err != nil {
+		return fmt.Errorf("failed to marshal message body: %v", err)
+	}
+
+	err = r.Channel.PublishWithContext(ctx,
 		TripExchange, // exchange
 		routingKey,   // routing key
 		false,        // mandatory
 		false,        // immediate
 		amqp.Publishing{
 			ContentType:  "text/plain",
-			Body:         []byte(body),
+			Body:         payload,
 			DeliveryMode: amqp.Persistent,
 		})
 

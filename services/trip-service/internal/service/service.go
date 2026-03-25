@@ -15,19 +15,19 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type service struct {
+type Service struct {
 	repo domain.TripRepository
 }
 
-func NewService(repo domain.TripRepository) *service {
-	return &service{
+func NewService(repo domain.TripRepository) *Service {
+	return &Service{
 		repo: repo,
 	}
 }
 
 const QueryDefaultContext = 5 * time.Second
 
-func (s *service) CreateTrip(ctx context.Context, fare *domain.RideFareModel) (*domain.TripModel, error) {
+func (s *Service) CreateTrip(ctx context.Context, fare *domain.RideFareModel) (*domain.TripModel, error) {
 
 	ctx, cancel := context.WithTimeout(ctx, QueryDefaultContext)
 	defer cancel()
@@ -47,7 +47,7 @@ func (s *service) CreateTrip(ctx context.Context, fare *domain.RideFareModel) (*
 	return s.repo.CreateTrip(ctx, t)
 }
 
-func (s *service) GetRoute(ctx context.Context, pickup, destination *types.Coordinate) (*types.OSRMApiResponse, error) {
+func (s *Service) GetRoute(ctx context.Context, pickup, destination *types.Coordinate) (*types.OSRMApiResponse, error) {
 
 	ctx, cancel := context.WithTimeout(ctx, QueryDefaultContext)
 	defer cancel()
@@ -78,7 +78,7 @@ func (s *service) GetRoute(ctx context.Context, pickup, destination *types.Coord
 	return routeResp, nil
 }
 
-func (s *service) EstimatePackagesPriceWithRoute(route *types.OSRMApiResponse) []*domain.RideFareModel {
+func (s *Service) EstimatePackagesPriceWithRoute(route *types.OSRMApiResponse) []*domain.RideFareModel {
 	baseFares := getBaseFares()
 	estimatedFares := make([]*domain.RideFareModel, len(baseFares))
 
@@ -106,7 +106,7 @@ func EstimateFareRoute(fare *domain.RideFareModel, route *types.OSRMApiResponse)
 	}
 }
 
-func (s *service) GenerateTripFares(ctx context.Context, fares []*domain.RideFareModel, userID string, route *types.OSRMApiResponse) ([]*domain.RideFareModel, error) {
+func (s *Service) GenerateTripFares(ctx context.Context, fares []*domain.RideFareModel, userID string, route *types.OSRMApiResponse) ([]*domain.RideFareModel, error) {
 
 	ctx, cancel := context.WithTimeout(ctx, QueryDefaultContext)
 	defer cancel()
@@ -155,7 +155,7 @@ func getBaseFares() []*domain.RideFareModel {
 	}
 }
 
-func (s *service) GetAndValidateFare(ctx context.Context, fareID string, userID string) (*domain.RideFareModel, error) {
+func (s *Service) GetAndValidateFare(ctx context.Context, fareID string, userID string) (*domain.RideFareModel, error) {
 
 	fare, err := s.repo.GetRideFareById(ctx, fareID)
 	if err != nil {

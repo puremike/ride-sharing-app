@@ -17,6 +17,7 @@ func server(mux http.Handler) error {
 		Handler: mux,
 	}
 
+
 	serverErrors := make(chan error, 1)
 
 	go func() {

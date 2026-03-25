@@ -26,6 +26,8 @@ func (t *TripModel) ToProto() *pb.Trip {
 			TotalPriceInCents: t.RideFare.TotalPriceInCents,
 		},
 		Driver: t.Driver,
+		Route:  t.RideFare.Route.ToRoute(),
+		Status: t.Status,
 	}
 }
 
